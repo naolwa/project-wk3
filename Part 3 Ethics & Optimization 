@@ -1,0 +1,70 @@
+The Biases that our model has before troubleshooting
+🌸 1️⃣ Dataset Bias
+🪴 Iris dataset
+
+Small and simple dataset: only 150 samples, 3 classes (setosa, versicolor, virginica).
+→ Not representative of real-world complexity.
+
+Balanced classes, but low diversity: all samples are from a limited number of plants measured under similar conditions, so the model may not generalize beyond these.
+
+Feature assumptions: the model assumes that all features are numeric and that simple mean imputation (for missing values) is adequate.
+→ That could bias the model if missingness is not random.
+
+🪴 MNIST dataset
+
+Cultural/visual bias: MNIST digits were written by American students in the 1990s. Handwriting styles vary across age groups, cultures, and languages, so a CNN trained here performs poorly on digits written differently (e.g., Arabic numerals or cursive styles).
+
+Grayscale, centered digits: the dataset assumes digits are centered and clean. In real-world use, this biases the model toward clean, centered inputs.
+
+🌸 2️⃣ Algorithmic Bias
+🧠 Decision Tree
+
+Decision trees can overfit easily to small datasets like Iris, especially with few samples and no pruning parameters.
+
+Bias toward features with more unique values: Decision Trees can prefer continuous features over categorical ones if not handled carefully (though Iris features are all continuous).
+
+🧠 CNN
+
+CNNs can inherit inductive biases (assumptions) about local spatial structure — they assume nearby pixels are more related than distant ones. That’s helpful for images but could be a bias if used on data not following that assumption.
+
+The model assumes equal importance of all classes due to the use of CrossEntropyLoss() with uniform weighting. If dataset classes were imbalanced, this would bias results toward the majority class.
+
+🌸 3️⃣ Evaluation Bias
+
+Accuracy, precision, recall (macro) are computed, but not shown per class. This hides potential class-level performance gaps.
+→ Example: the model could predict one class very well but another poorly, and the “macro” average might still look fine.
+
+Test split uses random_state=42, which fixes the random split but may not reflect generalization on unseen or imbalanced distributions.
+
+For the CNN, only overall accuracy is printed.
+→ No confusion matrix, F1 scores, or per-class evaluation — this biases the interpretation toward a single metric.
+
+🌸 4️⃣ Implementation Bias (Code Assumptions)
+
+The code imputes missing values using the mean automatically. This assumes data is missing completely at random. If missingness depends on the feature or label, that’s biased.
+
+Feature selection: The user chooses which features to train on. Humans might unintentionally select biased features, introducing human selection bias.
+
+Fixed architecture and hyperparameters for CNN: Assumes this CNN design is optimal for all image problems — it’s not.
+
+Streamlit UI shows only first few samples (st.dataframe(X.head())), possibly giving a misleading sense of balance or variability.
+
+🌸 5️⃣ Hardware and Computational Bias
+
+The model uses device = torch.device("cuda" if torch.cuda.is_available() else "cpu").
+→ Different devices may perform floating-point operations slightly differently, causing subtle numerical bias.
+→ On weaker machines (CPU-only), the model may not be trained as thoroughly due to slower training.
+
+🌸 How We May Reduce Bias
+
+Use more diverse and representative datasets.
+
+Apply stratified sampling when splitting data.
+
+Report per-class metrics and confusion matrices.
+
+Experiment with cross-validation instead of one random split.
+
+Use data augmentation for MNIST (rotations, shifts).
+
+Test the CNN on other handwriting datasets (e.g., EMNIST).

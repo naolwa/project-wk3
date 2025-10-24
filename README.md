@@ -175,6 +175,5 @@ Common issues and fixes:
 
 
 
----
 
-Would you like me to create a **ready-to-download README.md file** (in proper Markdown format) and a **requirements.txt** file to match your code?
+
